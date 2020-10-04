@@ -29,8 +29,10 @@ def runner(imagePath,iterations = 10):
                     location = findImage(gameStartImage)
             elif(image == 'settings.png'):
                 print("The game has started, sleeping for 10 minutes...")
-                waitTime = (60*10) + 10 # 10 minutes + 10 seconds for safety
-                time.sleep(waitTime)
+                for j in range(10):
+                    print(f"Sleeping for {j+1} out of 10 minutes...", end='\r')
+                    time.sleep(60)
+                time.sleep(5) # Extra 5 seconds just in case
                 location = findImageLoop(imageFile,sleepTime=3,accuracy=0.85)
             elif(image == 'ok.png'):
                 location = findImageIterations(imageFile,iterations=6,sleepTime=5,accuracy=0.85)
