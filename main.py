@@ -13,31 +13,31 @@ def runner(imagePath,iterations = 10):
     gameStartImage = imagePath + 'start.png'
 
     for i in range(iterations):
-        print(f"Iteration: {i} / {iterations}")
+        print(f"Iteration: {i+1} / {iterations}")
+        time.sleep(0.250)
         for image in imageArray:
             imageFile = imagePath + image
             if(image == 'accept.png'):
-                location = findImageLoop(imageFile,sleepTime=8,accuracy=0.85)
-                clickImage(location[0],location[1])
+                acceptLocation = findImageLoop(imageFile,sleepTime=8,accuracy=0.85)
+                clickImage(acceptLocation[0],acceptLocation[1])
 
-                checkLocation = findImage(gameStartImage)
-                while(checkLocation[0] == -1):
-                    location = findImage(imageFile)
-                    clickImage(location[0],location[1],duration=0)
+                location = findImage(gameStartImage)
+                while(location[0] == -1):
+                    acceptLocation = findImage(imageFile)
+                    clickImage(acceptLocation[0],acceptLocation[1],duration=0)
                     time.sleep(8)
-                    checkLocation = findImage(gameStartImage)
+                    location = findImage(gameStartImage)
             elif(image == 'settings.png'):
-                print("The game has started, sleeping for 10 minutes and 30 seconds...")
-                waitTime = (60*10) + 30 # 10 minutes + 30 seconds for safety
+                print("The game has started, sleeping for 10 minutes...")
+                waitTime = (60*10) + 10 # 10 minutes + 10 seconds for safety
                 time.sleep(waitTime)
                 location = findImageLoop(imageFile,sleepTime=3,accuracy=0.85)
-                clickImage(location[0],location[1])
             elif(image == 'ok.png'):
-                location = findImageIterations(imageFile,iterations=5,sleepTime=5,accuracy=0.85)
-                clickImage(location[0],location[1])
+                location = findImageIterations(imageFile,iterations=6,sleepTime=5,accuracy=0.85)
             else:  
                 location = findImageLoop(imageFile,sleepTime=20,accuracy=0.85)
-                clickImage(location[0],location[1])
+
+            clickImage(location[0],location[1])
 
 def clickImage(x, y, duration = 0.5):
     if(x != -1 and y != -1):
@@ -59,7 +59,7 @@ def findImage(imagePath, accuracy = 0.85):
 
     res = cv2.matchTemplate(ssGrey,template,cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-    print(max_val)
+    # print(f"Matching value to image is: {max_val}")
 
     top_left = max_loc
     bottom_right = (top_left[0] + w, top_left[1] + h)
