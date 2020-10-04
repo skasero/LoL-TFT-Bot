@@ -15,9 +15,10 @@ def runner(imagePath,iterations = 3):
 
     for i in range(iterations):
         print(f"Iteration: {i+1} / {iterations}")
-        time.sleep(1)
+        
         for image in imageArray:
             imageFile = imagePath + image
+            time.sleep(1)
             if(image == 'accept.png'):
                 acceptLocation = findImageLoop(imageFile,sleepTime=8,accuracy=0.85)
                 clickImage(acceptLocation[0],acceptLocation[1])
