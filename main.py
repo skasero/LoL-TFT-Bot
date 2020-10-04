@@ -2,24 +2,25 @@ import os
 import numpy as np
 import pyautogui
 import cv2
-
 import time
 
-def runner(imagePath,iterations = 10):
+def runner(imagePath,iterations = 3):
     if(imagePath[-1] != '/'):
         imagePath = imagePath + '/'
 
     imageArray = ['find_match.png', 'accept.png', 'settings.png', 'surrender_p1.png', 'surrender_p2.png', 'ok.png', 'play_again.png']
     gameStartImage = imagePath + 'start.png'
+    playAgainImage = imagePath + 'play_again.png'
 
     for i in range(iterations):
         print(f"Iteration: {i+1} / {iterations}")
-        time.sleep(0.250)
+        time.sleep(1)
         for image in imageArray:
             imageFile = imagePath + image
             if(image == 'accept.png'):
                 acceptLocation = findImageLoop(imageFile,sleepTime=8,accuracy=0.85)
                 clickImage(acceptLocation[0],acceptLocation[1])
+                print("Waiting for the game to start")
 
                 location = findImage(gameStartImage)
                 while(location[0] == -1):
@@ -35,15 +36,20 @@ def runner(imagePath,iterations = 10):
                 time.sleep(5) # Extra 5 seconds just in case
                 location = findImageLoop(imageFile,sleepTime=3,accuracy=0.85)
             elif(image == 'ok.png'):
-                location = findImageIterations(imageFile,iterations=6,sleepTime=5,accuracy=0.85)
+                playAgainLocation = findImage(playAgainImage)
+                while(playAgainLocation[0] == -1):
+                    location = findImage(imageFile)
+                    clickImage(location[0],location[1])
+                    time.sleep(5)
+                    playAgainLocation = findImage(playAgainImage)
             else:  
-                location = findImageLoop(imageFile,sleepTime=20,accuracy=0.85)
+                location = findImageLoop(imageFile,sleepTime=15,accuracy=0.85)
 
             clickImage(location[0],location[1])
 
 def clickImage(x, y, duration = 0.5):
     if(x != -1 and y != -1):
-        print(f"Moving mouse to x: {x}, y: {y}")
+        # print(f"Moving mouse to x: {x}, y: {y}")
         pyautogui.moveTo(x,y,duration)
         # pyautogui.click(button='left') # This doesn't click in league, it maybe too fast
         pyautogui.mouseDown()
@@ -81,7 +87,7 @@ def findImage(imagePath, accuracy = 0.85):
         return (-1,-1)
     return middle
 
-def findImageLoop(image, sleepTime = 20, accuracy = 0.85):
+def findImageLoop(image, sleepTime = 15, accuracy = 0.85):
     location = findImage(image,accuracy)
     while(location[0] == -1):
         print(f"Image: {image} was not found... sleeping for {sleepTime} seconds")
