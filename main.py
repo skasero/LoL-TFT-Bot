@@ -33,6 +33,7 @@ def runner(imagePath,iterations = 3):
                 for j in range(10):
                     print(f"Sleeping for {j+1} out of 10 minutes...", end='\r')
                     time.sleep(60)
+                print("")
                 time.sleep(5) # Extra 5 seconds just in case
                 location = findImageLoop(imageFile,sleepTime=3,accuracy=0.85)
             elif(image == 'ok.png'):
