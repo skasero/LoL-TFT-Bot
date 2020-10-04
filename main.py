@@ -1,4 +1,5 @@
 import os 
+import sys
 import numpy as np
 import pyautogui
 import cv2
@@ -107,6 +108,8 @@ def findImageIterations(image, iterations = 5, sleepTime = 5, accuracy = 0.85):
 
 if __name__ == '__main__':
     imagePath = 'images/'
+    if(len(sys.argv) == 2):
+        runner(imagePath,sys.argv[1])
     runner(imagePath)
     # time.sleep(2)
     # location = findImage('images/t.png')
