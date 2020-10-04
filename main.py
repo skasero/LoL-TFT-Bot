@@ -16,7 +16,7 @@ def runner(imagePath,iterations = 10):
         for image in imageArray:
             imageFile = imagePath + image
             if(image == 'accept.png'):
-                location = findImageLoop(imageFile,sleepTime=8,accuracy=0.9)
+                location = findImageLoop(imageFile,sleepTime=8,accuracy=0.85)
                 clickImage(location[0],location[1])
 
                 checkLocation = findImage(gameStartImage)
@@ -25,17 +25,16 @@ def runner(imagePath,iterations = 10):
                     clickImage(location[0],location[1],duration=0)
                     time.sleep(8)
                     checkLocation = findImage(gameStartImage)
-            
             elif(image == 'surrender_p1.png'):
+                print("The game has started, sleeping for 10 minutes and 30 seconds...")
                 waitTime = (60*10) + 30 # 10 minutes + 30 seconds for safety
                 time.sleep(waitTime)
                 pyautogui.press('esc')
-                location = findImageLoop(imageFile,sleepTime=3,accuracy=0.9)
+                location = findImageLoop(imageFile,sleepTime=3,accuracy=0.85)
                 clickImage(location[0],location[1])
             else:  
-                location = findImageLoop(imageFile,sleepTime=30,accuracy=0.9)
+                location = findImageLoop(imageFile,sleepTime=30,accuracy=0.85)
                 clickImage(location[0],location[1])
-            exit()
 
 def clickImage(x, y, duration = 0.5):
     if(x != -1 and y != -1):
@@ -43,8 +42,7 @@ def clickImage(x, y, duration = 0.5):
         pyautogui.moveTo(x,y,duration)
         pyautogui.click(button='left')
 
-
-def findImage(imagePath, accuracy = 0.9):
+def findImage(imagePath, accuracy = 0.85):
     # start = time.time()
 
     screenshot = pyautogui.screenshot()
@@ -62,7 +60,6 @@ def findImage(imagePath, accuracy = 0.9):
     bottom_right = (top_left[0] + w, top_left[1] + h)
     middle = (top_left[0] + (w // 2), top_left[1] + (h // 2))
 
-
     # print(top_left)
     # print(bottom_right)
     print(middle)
@@ -71,14 +68,13 @@ def findImage(imagePath, accuracy = 0.9):
 
     # cv2.imwrite('output.png',ssGrey)
 
-
     # end = time.time()
     # print(end - start)
     if(max_val < accuracy):
         return (-1,-1)
     return middle
 
-def findImageLoop(image, sleepTime = 30, accuracy = 0.9):
+def findImageLoop(image, sleepTime = 30, accuracy = 0.85):
     location = findImage(image,accuracy)
     while(location[0] == -1):
         print(f"Image: {image} was not found... sleeping for {sleepTime} seconds")
