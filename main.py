@@ -18,7 +18,7 @@ def runner(imagePath,iterations = 3):
         
         for image in imageArray:
             imageFile = imagePath + image
-            time.sleep(1)
+            time.sleep(0.500)
             if(image == 'accept.png'):
                 acceptLocation = findImageLoop(imageFile,sleepTime=8,accuracy=0.85)
                 clickImage(acceptLocation[0],acceptLocation[1])
@@ -111,7 +111,8 @@ if __name__ == '__main__':
     imagePath = 'images/'
     if(len(sys.argv) == 2):
         runner(imagePath,int(sys.argv[1]))
-    runner(imagePath)
+    else:
+        runner(imagePath)
     # time.sleep(2)
     # location = findImage('images/t.png')
     # clickImage(location[0],location[1])
