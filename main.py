@@ -108,7 +108,6 @@ class TFTBot:
                 else:
                     raise Exception("This should never be reached and something wrong has happened")
 
-                # exit()
                 self.clickImage(location[0],location[1])
 
     def clickImage(self, x, y, duration = 0.5):
@@ -153,19 +152,21 @@ class TFTBot:
         return middle
 
     def findImageLoop(self, image, scale, sleepTime = 15, accuracy = 0.80):
+        base=os.path.basename(image)
         location = self.findImage(image,scale,accuracy)
         while(location[0] == -1):
-            print(f'Image: {image} was not found... sleeping for {sleepTime} seconds')
+            print(f'Image: {base} was not found... sleeping for {sleepTime} seconds')
             time.sleep(sleepTime)
             location = self.findImage(image,scale,accuracy)
         return location
 
     def findImageIterations(self, image, scale, iterations = 5, sleepTime = 5, accuracy = 0.80):
+        base=os.path.basename(image)
         for i in range(iterations):
             location = self.findImage(image,scale,accuracy)
             if(location[0] != -1):
                 break
-            print(f'Image: {image} was not found... sleeping for {sleepTime} seconds')
+            print(f'Image: {base} was not found... sleeping for {sleepTime} seconds')
             time.sleep(sleepTime)
         return location
 
