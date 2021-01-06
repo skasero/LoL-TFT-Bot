@@ -31,7 +31,7 @@ class TFTBot:
         best_scale = None
         best_max_val = -1
 
-        for scale in np.linspace(0.3, 1.0, 50)[::-1]:
+        for scale in np.linspace(0.4, 1.0, 75)[::-1]:
             resized = imutils.resize(template, width = int(template.shape[1] * scale))
             res = cv2.matchTemplate(ssGrey,resized,cv2.TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
@@ -40,7 +40,7 @@ class TFTBot:
                 best_max_val = max_val
                 best_scale = scale
 
-        if(best_max_val >= 0.85):
+        if(best_max_val >= 0.80):
             print(f'Best Scale value: {best_scale} with best image accuracy of: {best_max_val}')
             ## This is for the client_scale
             if(scale_version == 0):
@@ -52,18 +52,20 @@ class TFTBot:
             raise Exception('Could NOT find image scaling, unable to continue.')  
 
     def runner(self, iterations = 1):
-        imageArray = ['find_match.png', 'accept.png', 'settings.png', 'surrender_p1.png', 'surrender_p2.png', 'ok.png', 'play_again.png']
+        client_imageArray= ['find_match.png', 'accept.png', 'ok.png', 'play_again.png']
+        ingame_imageArray= ['settings.png', 'surrender_p1.png', 'surrender_p2.png']
+        full_imageArray = ['find_match.png', 'accept.png', 'settings.png', 'surrender_p1.png', 'surrender_p2.png', 'ok.png', 'play_again.png']
         gameStartImage = self.imagePath + 'start.png'
         playAgainImage = self.imagePath + 'play_again.png'
 
         for i in range(iterations):
             print(f'Iteration: {i+1} / {iterations}')
             
-            for image in imageArray:
+            for image in full_imageArray:
                 imageFile = self.imagePath + image
                 time.sleep(0.500)
                 if(image == 'accept.png'):
-                    acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.85)
+                    acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.80)
                     self.clickImage(acceptLocation[0],acceptLocation[1])
                     print('Waiting for the game to start')
 
@@ -72,7 +74,7 @@ class TFTBot:
                         try:
                             acceptLocation = self.findImage(imageFile,self.client_scale)
                             self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
-                            time.sleep(7)
+                            time.sleep(6)
                             self.setScale(gameStartImage,1)
                             break
                         except:
@@ -91,7 +93,7 @@ class TFTBot:
                         time.sleep(60)
                     print('')
                     time.sleep(5) # Extra 5 seconds just in case
-                    location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=3,accuracy=0.85)
+                    location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=3,accuracy=0.80)
                 elif(image == 'ok.png'):
                     playAgainLocation = self.findImage(playAgainImage,self.client_scale)
                     while(playAgainLocation[0] == -1):
@@ -99,10 +101,14 @@ class TFTBot:
                         self.clickImage(location[0],location[1])
                         time.sleep(5)
                         playAgainLocation = self.findImage(playAgainImage,self.client_scale)
-                else:  
-                    location = self.findImageLoop(imageFile,sleepTime=15,accuracy=0.85)
+                elif(image in client_imageArray):  
+                    location = self.findImageLoop(imageFile,self.client_scale,sleepTime=15,accuracy=0.80)
+                elif(image in ingame_imageArray):
+                    location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=15,accuracy=0.80)
+                else:
+                    raise Exception("This should never be reached and something wrong has happened")
 
-                exit()
+                # exit()
                 self.clickImage(location[0],location[1])
 
     def clickImage(self, x, y, duration = 0.5):
@@ -113,7 +119,7 @@ class TFTBot:
             pyautogui.mouseDown()
             pyautogui.mouseUp()
 
-    def findImage(self, imagePath, scale, accuracy = 0.85):
+    def findImage(self, imagePath, scale, accuracy = 0.80):
         # start = time.time()
 
         ## This screenshot of one monitor only
@@ -126,7 +132,7 @@ class TFTBot:
 
         res = cv2.matchTemplate(ssGrey,resized,cv2.TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-        # print(f'Matching value to image is: {max_val}')
+        print(f'Matching value to image is: {max_val}')
 
         top_left = max_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
@@ -146,17 +152,17 @@ class TFTBot:
             return (-1,-1)
         return middle
 
-    def findImageLoop(self, image, scale, sleepTime = 15, accuracy = 0.85):
+    def findImageLoop(self, image, scale, sleepTime = 15, accuracy = 0.80):
         location = self.findImage(image,scale,accuracy)
         while(location[0] == -1):
             print(f'Image: {image} was not found... sleeping for {sleepTime} seconds')
             time.sleep(sleepTime)
-            location = self.findImage(image,accuracy)
+            location = self.findImage(image,scale,accuracy)
         return location
 
-    def findImageIterations(self, image, iterations = 5, sleepTime = 5, accuracy = 0.85):
+    def findImageIterations(self, image, scale, iterations = 5, sleepTime = 5, accuracy = 0.80):
         for i in range(iterations):
-            location = self.findImage(image,accuracy)
+            location = self.findImage(image,scale,accuracy)
             if(location[0] != -1):
                 break
             print(f'Image: {image} was not found... sleeping for {sleepTime} seconds')
