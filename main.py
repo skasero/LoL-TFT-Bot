@@ -35,7 +35,7 @@ class TFTBot:
             resized = imutils.resize(template, width = int(template.shape[1] * scale))
             res = cv2.matchTemplate(ssGrey,resized,cv2.TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-            print(f'Matching value to image is: {max_val}')
+            # print(f'Matching value to image is: {max_val}')
             if(max_val > best_max_val):
                 best_max_val = max_val
                 best_scale = scale
@@ -69,12 +69,14 @@ class TFTBot:
                     self.clickImage(acceptLocation[0],acceptLocation[1])
                     print('Waiting for the game to start')
 
-                    ##
+                    ## This is loop is meant for both the accept button and to get the in_game scale.
                     while(True):
                         try:
+                            ## Accept button
                             acceptLocation = self.findImage(imageFile,self.client_scale)
                             self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
                             time.sleep(6)
+                            ## Used to get in_game scale
                             self.setScale(gameStartImage,1)
                             break
                         except:
@@ -132,7 +134,7 @@ class TFTBot:
 
         res = cv2.matchTemplate(ssGrey,resized,cv2.TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-        print(f'Matching value to image is: {max_val}')
+        # print(f'Matching value to image is: {max_val}')
 
         top_left = max_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
