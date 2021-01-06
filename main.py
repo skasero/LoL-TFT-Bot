@@ -13,12 +13,10 @@ class TFTBot:
 
     ## Used to get scale of client
     def __init__(self, imagePath):
-        if(imagePath[-1] != '/'):
-            self.imagePath = imagePath + '/'
-        else:
-            self.imagePath = imagePath
+        self.imagePath = imagePath
 
         img_init = self.imagePath + 'find_match.png'
+        print('Beginning TFT-Bot')
         self.setScale(img_init,0)
 
     def setScale(self,image,scale_version):
@@ -51,7 +49,7 @@ class TFTBot:
         else:
             raise Exception('Could NOT find image scaling, unable to continue.')  
 
-    def runner(self, iterations = 1):
+    def runner(self, iterations = 3):
         client_imageArray= ['find_match.png', 'accept.png', 'ok.png', 'play_again.png']
         ingame_imageArray= ['settings.png', 'surrender_p1.png', 'surrender_p2.png']
         full_imageArray = ['find_match.png', 'accept.png', 'settings.png', 'surrender_p1.png', 'surrender_p2.png', 'ok.png', 'play_again.png']
@@ -171,8 +169,23 @@ class TFTBot:
             time.sleep(sleepTime)
         return location
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 if __name__ == '__main__':
-    imagePath = 'images/'
+    ## Used for non-pyinstaller version
+    imagePath = resource_path('images/')
+
+    ## Used for pyinstaller version
+    # imagePath = resource_path('')
+
     tft = TFTBot(imagePath)
     if(len(sys.argv) == 2):
         tft.runner(int(sys.argv[1]))
