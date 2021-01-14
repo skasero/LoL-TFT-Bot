@@ -129,7 +129,7 @@ class TFTBot:
                     self.clickImage(location[0],location[1])
 
                 ## This means that it didn't find a game before the last iteration
-                if(attempt == 4):
+                if(attempt == 4 and gameStarted == False):
                     raise Exception('Bot got stuck in infinite queue, please wait and restart bot.')
 
     def clickImage(self, x, y, duration = 0.5):
