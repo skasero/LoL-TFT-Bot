@@ -62,19 +62,20 @@ class TFTBot:
         for i in range(iterations):
             print(f'Iteration: {i+1} / {iterations}')
             
-            for image in full_imageArray:
-                imageFile = self.imagePath + image
-                time.sleep(0.500)
-                if(image == 'accept.png'):
-                    # acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.80)
-                    # self.clickImage(acceptLocation[0],acceptLocation[1])
-                    print('Waiting for the game to start')
+            for attempt in range(5):
+                gameStarted = False
 
-                    ## This loop is used for if a user gets stuck in queue for more than 3 minutes, it will attempt
-                    ## to try and cancel the queue and restart 5 times before exiting the programming
-                    for i in range(5):
-                        gameStarted = False
-                        threeMinQueue = datetime.datetime.now() + datetime.timedelta(seconds=3)
+                for image in full_imageArray:
+                    imageFile = self.imagePath + image
+                    time.sleep(0.500)
+                    if(image == 'accept.png'):
+                        # acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.80)
+                        # self.clickImage(acceptLocation[0],acceptLocation[1])
+                        print('Waiting for the game to start')
+
+                        ## This loop is used for if a user gets stuck in queue for more than 3 minutes, it will attempt
+                        ## to try and cancel the queue and restart 5 times before exiting the programming
+                        threeMinQueue = datetime.datetime.now() + datetime.timedelta(seconds=12)
                         
                         ## This loop is meant for both the accept button and to get the in_game scale.
                         while(datetime.datetime.now() < threeMinQueue):
@@ -87,52 +88,49 @@ class TFTBot:
                                 self.setScale(gameStartImage,1)
                                 ## Also this part of the code will not reach unless setScale() passes and find the image in-game
                                 gameStarted = True
-                                break
                             except:
                                 pass
                         
                         ## This is the case where the bot got stuck in queue, restart the queue
                         if(gameStarted == False):
-                            print(f'Bot got stuck trying to find a game, restarting queue now. Attempts: {i+1} / 5')
+                            print(f'Bot got stuck trying to find a game, restarting queue now. Attempts: {attempt+1} / 5')
                             cancelQueueLocation = self.findImage(cancelQueueImage,self.client_scale)
                             self.clickImage(cancelQueueLocation[0],cancelQueueLocation[1],duration=0)
-                        ## For when the bot did get into a game
-                        else:
                             break
 
-                        ## This means that it didn't find a game before the last iteration
-                        if(i == 4):
-                            raise Exception('Bot got stuck in infinite queue, please wait and restart bot.')
-
-                    # location = self.findImage(gameStartImage)
-                    # while(location[0] == -1):
-                    #     acceptLocation = self.findImage(imageFile)
-                    #     self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
-                    #     time.sleep(8)
-                    #     location = self.findImage(gameStartImage)
-                elif(image == 'settings.png'):
-                    print('The game has started, sleeping for 10 minutes...')
-                    for j in range(10):
-                        print(f'Sleeping for {j+1} out of 10 minutes...', end='\r')
-                        time.sleep(60)
-                    print('')
-                    time.sleep(5) # Extra 5 seconds just in case
-                    location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=3,accuracy=0.80)
-                elif(image == 'ok.png'):
-                    playAgainLocation = self.findImage(playAgainImage,self.client_scale)
-                    while(playAgainLocation[0] == -1):
-                        location = self.findImage(imageFile,self.client_scale)
-                        self.clickImage(location[0],location[1])
-                        time.sleep(5)
+                        # location = self.findImage(gameStartImage)
+                        # while(location[0] == -1):
+                        #     acceptLocation = self.findImage(imageFile)
+                        #     self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
+                        #     time.sleep(8)
+                        #     location = self.findImage(gameStartImage)
+                    elif(image == 'settings.png'):
+                        print('The game has started, sleeping for 10 minutes...')
+                        for j in range(10):
+                            print(f'Sleeping for {j+1} out of 10 minutes...', end='\r')
+                            time.sleep(60)
+                        print('')
+                        time.sleep(5) # Extra 5 seconds just in case
+                        location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=3,accuracy=0.80)
+                    elif(image == 'ok.png'):
                         playAgainLocation = self.findImage(playAgainImage,self.client_scale)
-                elif(image in client_imageArray):  
-                    location = self.findImageLoop(imageFile,self.client_scale,sleepTime=15,accuracy=0.80)
-                elif(image in ingame_imageArray):
-                    location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=15,accuracy=0.80)
-                else:
-                    raise Exception("This should never be reached and something wrong has happened")
+                        while(playAgainLocation[0] == -1):
+                            location = self.findImage(imageFile,self.client_scale)
+                            self.clickImage(location[0],location[1])
+                            time.sleep(5)
+                            playAgainLocation = self.findImage(playAgainImage,self.client_scale)
+                    elif(image in client_imageArray):  
+                        location = self.findImageLoop(imageFile,self.client_scale,sleepTime=15,accuracy=0.80)
+                    elif(image in ingame_imageArray):
+                        location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=15,accuracy=0.80)
+                    else:
+                        raise Exception("This should never be reached and something wrong has happened")
 
-                self.clickImage(location[0],location[1])
+                    self.clickImage(location[0],location[1])
+
+                ## This means that it didn't find a game before the last iteration
+                if(attempt == 4):
+                    raise Exception('Bot got stuck in infinite queue, please wait and restart bot.')
 
     def clickImage(self, x, y, duration = 0.5):
         if(x != -1 and y != -1):
