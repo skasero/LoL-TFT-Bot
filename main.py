@@ -157,15 +157,18 @@ class TFTBot:
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
         print(f'Matching value to image is: {max_val}')
 
+        wScale = int(w * scale)
+        hScale = int(h * scale)
+
         top_left = max_loc
-        bottom_right = (top_left[0] + w, top_left[1] + h)
-        middle = (top_left[0] + (w // 2), top_left[1] + (h // 2))
+        bottom_right = (top_left[0] + wScale, top_left[1] + hScale)
+        middle = (top_left[0] + (wScale // 2), top_left[1] + (hScale // 2))
 
         # print(top_left)
         # print(bottom_right)
         # print(middle)
-        # cv2.rectangle(ssGrey,top_left, bottom_right, 255, 1)
-        # cv2.rectangle(ssGrey,middle, middle, 255, 6)
+        # cv2.rectangle(ssGrey,top_left,bottom_right,255,1)
+        # cv2.rectangle(ssGrey,middle,middle,255,6)
 
         # cv2.imwrite('output.png',ssGrey)
 
@@ -211,8 +214,6 @@ if __name__ == '__main__':
     ## Used for pyinstaller version
     # imagePath = resource_path('')
     tft = TFTBot(imagePath)
-    tft.findImage(imagePath + 'cancel_queue.png',tft.client_scale)
-    exit()
     if(len(sys.argv) == 2):
         tft.runner(int(sys.argv[1]))
     else:
