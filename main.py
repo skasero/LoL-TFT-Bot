@@ -75,7 +75,7 @@ class TFTBot:
 
                         ## This loop is used for if a user gets stuck in queue for more than 3 minutes, it will attempt
                         ## to try and cancel the queue and restart 5 times before exiting the programming
-                        threeMinQueue = datetime.datetime.now() + datetime.timedelta(seconds=12)
+                        threeMinQueue = datetime.datetime.now() + datetime.timedelta(minutes=3)
                         
                         ## This loop is meant for both the accept button and to get the in_game scale.
                         while(datetime.datetime.now() < threeMinQueue):
@@ -153,7 +153,7 @@ class TFTBot:
 
         res = cv2.matchTemplate(ssGrey,resized,cv2.TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-        print(f'Matching value to image is: {max_val}')
+        # print(f'Matching value to image is: {max_val}')
 
         wScale = int(w * scale)
         hScale = int(h * scale)
