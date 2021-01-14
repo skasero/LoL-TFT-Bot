@@ -1,10 +1,12 @@
 import os 
 import sys
+from cv2 import data
 import numpy as np
 import pyautogui
 import cv2
 import time
 import imutils
+import datetime
 
 class TFTBot:
     client_scale = None
@@ -55,6 +57,7 @@ class TFTBot:
         full_imageArray = ['find_match.png', 'accept.png', 'settings.png', 'surrender_p1.png', 'surrender_p2.png', 'ok.png', 'play_again.png']
         gameStartImage = self.imagePath + 'start.png'
         playAgainImage = self.imagePath + 'play_again.png'
+        cancelQueueImage = self.imagePath + 'cancel_queue.png'
 
         for i in range(iterations):
             print(f'Iteration: {i+1} / {iterations}')
@@ -63,22 +66,43 @@ class TFTBot:
                 imageFile = self.imagePath + image
                 time.sleep(0.500)
                 if(image == 'accept.png'):
-                    acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.80)
-                    self.clickImage(acceptLocation[0],acceptLocation[1])
+                    # acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.80)
+                    # self.clickImage(acceptLocation[0],acceptLocation[1])
                     print('Waiting for the game to start')
 
-                    ## This is loop is meant for both the accept button and to get the in_game scale.
-                    while(True):
-                        try:
-                            ## Accept button
-                            acceptLocation = self.findImage(imageFile,self.client_scale)
-                            self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
-                            time.sleep(6)
-                            ## Used to get in_game scale
-                            self.setScale(gameStartImage,1)
+                    ## This loop is used for if a user gets stuck in queue for more than 3 minutes, it will attempt
+                    ## to try and cancel the queue and restart 5 times before exiting the programming
+                    for i in range(5):
+                        gameStarted = False
+                        threeMinQueue = datetime.datetime.now() + datetime.timedelta(seconds=3)
+                        
+                        ## This loop is meant for both the accept button and to get the in_game scale.
+                        while(datetime.datetime.now() < threeMinQueue):
+                            try:
+                                ## Accept button
+                                acceptLocation = self.findImage(imageFile,self.client_scale)
+                                self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
+                                time.sleep(6)
+                                ## Used to get in_game scale
+                                self.setScale(gameStartImage,1)
+                                ## Also this part of the code will not reach unless setScale() passes and find the image in-game
+                                gameStarted = True
+                                break
+                            except:
+                                pass
+                        
+                        ## This is the case where the bot got stuck in queue, restart the queue
+                        if(gameStarted == False):
+                            print(f'Bot got stuck trying to find a game, restarting queue now. Attempts: {i+1} / 5')
+                            cancelQueueLocation = self.findImage(cancelQueueImage,self.client_scale)
+                            self.clickImage(cancelQueueLocation[0],cancelQueueLocation[1],duration=0)
+                        ## For when the bot did get into a game
+                        else:
                             break
-                        except:
-                            pass
+
+                        ## This means that it didn't find a game before the last iteration
+                        if(i == 4):
+                            raise Exception('Bot got stuck in infinite queue, please wait and restart bot.')
 
                     # location = self.findImage(gameStartImage)
                     # while(location[0] == -1):
@@ -131,7 +155,7 @@ class TFTBot:
 
         res = cv2.matchTemplate(ssGrey,resized,cv2.TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-        # print(f'Matching value to image is: {max_val}')
+        print(f'Matching value to image is: {max_val}')
 
         top_left = max_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
@@ -140,8 +164,8 @@ class TFTBot:
         # print(top_left)
         # print(bottom_right)
         # print(middle)
-        cv2.rectangle(ssGrey,top_left, bottom_right, 255, 1)
-        cv2.rectangle(ssGrey,middle, middle, 255, 6)
+        # cv2.rectangle(ssGrey,top_left, bottom_right, 255, 1)
+        # cv2.rectangle(ssGrey,middle, middle, 255, 6)
 
         # cv2.imwrite('output.png',ssGrey)
 
@@ -186,8 +210,9 @@ if __name__ == '__main__':
 
     ## Used for pyinstaller version
     # imagePath = resource_path('')
-
     tft = TFTBot(imagePath)
+    tft.findImage(imagePath + 'cancel_queue.png',tft.client_scale)
+    exit()
     if(len(sys.argv) == 2):
         tft.runner(int(sys.argv[1]))
     else:
