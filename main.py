@@ -61,39 +61,46 @@ class TFTBot:
 
         for i in range(iterations):
             print(f'Iteration: {i+1} / {iterations}')
-            
-            for attempt in range(5):
+            time.sleep(2)
+
+            for attempt in range(3):
                 gameStarted = False
 
                 for image in full_imageArray:
                     imageFile = self.imagePath + image
-                    time.sleep(0.500)
+                    time.sleep(0.5)
                     if(image == 'accept.png'):
                         # acceptLocation = self.findImageLoop(imageFile,self.client_scale,sleepTime=8,accuracy=0.80)
                         # self.clickImage(acceptLocation[0],acceptLocation[1])
                         print('Waiting for the game to start')
 
-                        ## This loop is used for if a user gets stuck in queue for more than 3 minutes, it will attempt
-                        ## to try and cancel the queue and restart 5 times before exiting the programming
-                        threeMinQueue = datetime.datetime.now() + datetime.timedelta(minutes=3)
+                        ## This loop is used for if a user gets stuck in queue for more than 5 minutes, it will attempt
+                        ## to try and cancel the queue and restart 3 times before exiting the programming
+                        fiveMinQueue = datetime.datetime.now() + datetime.timedelta(minutes=5)
                         
                         ## This loop is meant for both the accept button and to get the in_game scale.
-                        while(datetime.datetime.now() < threeMinQueue):
+                        while(datetime.datetime.now() < fiveMinQueue):
                             try:
                                 ## Accept button
-                                acceptLocation = self.findImage(imageFile,self.client_scale)
-                                self.clickImage(acceptLocation[0],acceptLocation[1],duration=0)
+                                location = self.findImage(imageFile,self.client_scale)
+
+                                ## Used to reset timer
+                                if(location[0] == -1):
+                                    fiveMinQueue = datetime.datetime.now() + datetime.timedelta(minutes=5)
+ 
+                                self.clickImage(location[0],location[1],duration=0)
                                 time.sleep(6)
                                 ## Used to get in_game scale
                                 self.setScale(gameStartImage,1)
                                 ## Also this part of the code will not reach unless setScale() passes and find the image in-game
                                 gameStarted = True
+                                break
                             except:
                                 pass
                         
                         ## This is the case where the bot got stuck in queue, restart the queue
                         if(gameStarted == False):
-                            print(f'Bot got stuck trying to find a game, restarting queue now. Attempts: {attempt+1} / 5')
+                            print(f'Bot got stuck trying to find a game, restarting queue now. Attempts: {attempt+1} / 3')
                             cancelQueueLocation = self.findImage(cancelQueueImage,self.client_scale)
                             self.clickImage(cancelQueueLocation[0],cancelQueueLocation[1],duration=0)
                             break
@@ -126,11 +133,18 @@ class TFTBot:
                     else:
                         raise Exception("This should never be reached and something wrong has happened")
 
-                    self.clickImage(location[0],location[1])
+                    try:
+                        self.clickImage(location[0],location[1])
+                    except:
+                        pass
 
                 ## This means that it didn't find a game before the last iteration
-                if(attempt == 4 and gameStarted == False):
+                if(attempt == 2 and gameStarted == False):
                     raise Exception('Bot got stuck in infinite queue, please wait and restart bot.')
+
+                ## This if for when the bot runs correctly
+                if(gameStarted == True):
+                    break
 
     def clickImage(self, x, y, duration = 0.5):
         if(x != -1 and y != -1):
@@ -190,10 +204,9 @@ class TFTBot:
         for i in range(iterations):
             location = self.findImage(image,scale,accuracy)
             if(location[0] != -1):
-                break
+                return location
             print(f'Image: {base} was not found... sleeping for {sleepTime} seconds')
             time.sleep(sleepTime)
-        return location
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
