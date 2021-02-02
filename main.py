@@ -58,6 +58,7 @@ class TFTBot:
         gameStartImage = self.imagePath + 'start.png'
         playAgainImage = self.imagePath + 'play_again.png'
         cancelQueueImage = self.imagePath + 'cancel_queue.png'
+        location = [] # empty array
 
         for i in range(iterations):
             print(f'Iteration: {i+1} / {iterations}')
@@ -93,6 +94,7 @@ class TFTBot:
                                 ## Used to get in_game scale
                                 self.setScale(gameStartImage,1)
                                 ## Also this part of the code will not reach unless setScale() passes and find the image in-game
+                                location = self.findImage(gameStartImage,self.ingame_scale)
                                 gameStarted = True
                                 break
                             except:
