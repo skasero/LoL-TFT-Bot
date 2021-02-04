@@ -153,6 +153,11 @@ class TFTBot:
             # print(f'Moving mouse to x: {x}, y: {y}')
             pyautogui.moveTo(x,y,duration)
             # pyautogui.click(button='left') # This doesn't click in league, it maybe too fast
+
+            ## Added a right click to make sure that the bot is clicked ingame before executing a left click
+            pyautogui.mouseDown(button='right')
+            pyautogui.mouseUp(button='right')
+            time.sleep(0.25)
             pyautogui.mouseDown()
             pyautogui.mouseUp()
 
