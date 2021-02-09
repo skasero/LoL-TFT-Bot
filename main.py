@@ -86,7 +86,7 @@ class TFTBot:
                                 location = self.findImage(imageFile,self.client_scale)
 
                                 ## Used to reset timer
-                                if(location[0] == -1):
+                                if(location[0] != -1):
                                     fiveMinQueue = datetime.datetime.now() + datetime.timedelta(minutes=5)
  
                                 self.clickImage(location[0],location[1],duration=0)
