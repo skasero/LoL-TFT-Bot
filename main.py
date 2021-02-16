@@ -58,7 +58,7 @@ class TFTBot:
         gameStartImage = self.imagePath + 'start.png'
         playAgainImage = self.imagePath + 'play_again.png'
         cancelQueueImage = self.imagePath + 'cancel_queue.png'
-        location = [] # empty array
+        surrenderP1Image = self.imagePath + 'surrender_p1.png'
 
         for i in range(iterations):
             print(f'Iteration: {i+1} / {iterations}')
@@ -68,6 +68,7 @@ class TFTBot:
                 gameStarted = False
 
                 for image in full_imageArray:
+                    location = [-1,-1] ## null array
                     imageFile = self.imagePath + image
                     time.sleep(0.5)
                     if(image == 'accept.png'):
@@ -135,10 +136,16 @@ class TFTBot:
                     else:
                         raise Exception("This should never be reached and something wrong has happened")
 
-                    try:
-                        self.clickImage(location[0],location[1])
-                    except:
-                        pass
+                    self.clickImage(location[0],location[1])
+
+                    ## This is a special case where sometimes settings isn't clicked on
+                    if(image == 'settings.png'):
+                        surrenderLocation = self.findImage(surrenderP1Image,self.ingame_scale)
+                        while(surrenderLocation[0] == -1):
+                            location = self.findImage(imageFile,self.ingame_scale)
+                            self.clickImage(location[0],location[1])
+                            time.sleep(1)
+                            surrenderLocation = self.findImage(surrenderP1Image,self.ingame_scale)
 
                 ## This means that it didn't find a game before the last iteration
                 if(attempt == 2 and gameStarted == False):
