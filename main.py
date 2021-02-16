@@ -18,7 +18,7 @@ class TFTBot:
         self.imagePath = imagePath
 
         img_init = self.imagePath + 'find_match.png'
-        print('Beginning TFT-Bot')
+        print('Starting up TFT-Bot')
         self.setScale(img_init,0)
 
     def setScale(self,image,scale_version):
@@ -41,7 +41,7 @@ class TFTBot:
                 best_scale = scale
 
         if(best_max_val >= 0.80):
-            print(f'Best Scale value: {best_scale} with best image accuracy of: {best_max_val}')
+            # print(f'Best Scale value: {best_scale} with best image accuracy of: {best_max_val}')
             ## This is for the client_scale
             if(scale_version == 0):
                 self.client_scale = best_scale
@@ -68,7 +68,7 @@ class TFTBot:
                 gameStarted = False
 
                 for image in full_imageArray:
-                    location = [-1,-1] ## null array
+                    location = (-1,-1) ## null tuple
                     imageFile = self.imagePath + image
                     time.sleep(0.5)
                     if(image == 'accept.png'):
@@ -115,12 +115,12 @@ class TFTBot:
                         #     time.sleep(8)
                         #     location = self.findImage(gameStartImage)
                     elif(image == 'settings.png'):
-                        print('The game has started, sleeping for 10 minutes...')
+                        print('The game has started, sleeping for 10 minutes')
                         for j in range(10):
                             print(f'Sleeping for {j+1} out of 10 minutes...', end='\r')
                             time.sleep(60)
                         print('')
-                        time.sleep(5) # Extra 5 seconds just in case
+                        time.sleep(5) ## Extra 5 seconds just in case
                         location = self.findImageLoop(imageFile,self.ingame_scale,sleepTime=3,accuracy=0.80)
                     elif(image == 'ok.png'):
                         playAgainLocation = self.findImage(playAgainImage,self.client_scale)
@@ -233,13 +233,19 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 if __name__ == '__main__':
+    iterations = 0
+    if(len(sys.argv) == 2):
+        iterations = int(sys.argv[1])
+    else:
+        iterations = int(input('Enter the number of iterations to run the TFT-Bot for: '))
+
     ## Used for non-pyinstaller version
     imagePath = resource_path('images/')
 
     ## Used for pyinstaller version
     # imagePath = resource_path('')
+
     tft = TFTBot(imagePath)
-    if(len(sys.argv) == 2):
-        tft.runner(int(sys.argv[1]))
-    else:
-        tft.runner()
+    tft.runner(iterations)
+
+    print('TFT-Bot has finished')
