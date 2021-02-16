@@ -6,7 +6,7 @@ There is no need to install anything, this bot is in written in Python and compi
 
 ## Usage
 To use this bot, the LoL client will need to have already been open and at the point where you can click "Find Match" for a TFT game. Be in the same spot as the image below.  
-<img src=https://github.com/skasero/LoL-TFT-Bot/blob/main/GitHub%20Resources/START.png width="75%" height="50%">
+<img src=https://github.com/skasero/LoL-TFT-Bot/blob/main/GitHub%20Resources/START.png width="75%" height="75%">
 
 You will also need to use Windows Command Prompt (CMD) to start the bot.  
 Go to where you downloaded the TFT-Bot.exe file and launch a Command Prompt. 
@@ -24,7 +24,9 @@ Once you execute the bot, the program does a search to see what resolution you h
 These resolutions are for the client and not once in-game.
 
 ## Video
-[insert video]
+<img src=https://j.gifs.com/ANw9Pj.gif width="50%" height="50%">
+
+[Video Usage](https://streamable.com/sid1jy)
 
 ## Known Issues
 I have run into an issue where the bot will get stuck in an infinite queue timer. It seems that once the LoL client gets in this state, the user cannot exit queue and has to force close the LoL client.
