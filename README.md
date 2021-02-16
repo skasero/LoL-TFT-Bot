@@ -5,7 +5,7 @@ A simple bot to play LoL TFT (Teamfight Tacticts) games for you to quickly level
 There is no need to install anything, this bot is in written in Python and compiled into an executable to run for Microsoft Windows. 
 
 ## Usage
-To use this bot, the LoL client will need to have already been open and at the point where you can click "Find Match" for a TFT game. Be in the same spot as the image below.
+To use this bot, the LoL client will need to have already been open and at the point where you can click "Find Match" for a TFT game. Be in the same spot as the image below.  
 <img src=https://github.com/skasero/LoL-TFT-Bot/blob/main/GitHub%20Resources/START.png width="75%" height="50%">
 
 You will also need to use Windows Command Prompt (CMD) to start the bot.  
