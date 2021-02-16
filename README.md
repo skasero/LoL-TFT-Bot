@@ -1,4 +1,4 @@
-# Leauge of Legends TFT Bot
+# League of Legends TFT Bot
 A simple bot to play LoL TFT (Teamfight Tacticts) games for you to quickly level up your TFT Pass. The bot will queue matches and surrender as soon as possible (10 minutes) before starting a new queue. Based on the current seasons, you need to play about 200 matches assuming you get no points from any missions. 
 
 ## Installation
